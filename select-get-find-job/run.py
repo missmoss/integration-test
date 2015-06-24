@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from core.util import get_bourl, get_worker
 from core.util import expire_handler, get_eventq, Event, Error
 from core.const import *
 
@@ -21,8 +20,10 @@ def make_timer(queue, job_id):
     t.start()
     return t
 
-def main(runner=1, target=None):
+def main(target=None):
+    from core.util import get_bourl, get_worker
     bourl = get_bourl()
+    runner = get_worker()
     expired = {}
     q = get_eventq()
     for r in xrange(runner):
@@ -41,7 +42,3 @@ def main(runner=1, target=None):
     except Exception as err:
         logging.exception(err)
         sys.exit(1)
-
-if __name__ == '__main__':
-    from cmd.select import work
-    main(runner=get_worker(), target=work)

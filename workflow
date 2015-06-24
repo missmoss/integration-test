@@ -11,6 +11,9 @@ while [ ! $# -eq 0 ]; do
         "-t")
             EXPECT="$2"; shift 2
             ;;
+        "-m")
+            MODULE="$2"; shift 2
+            ;;
         *)
             echo "Bad arguemnt"; exit 1
             ;;
@@ -20,13 +23,15 @@ done
 : ${SUITE:?"Need to specify test suite"}
 : ${WORKER:?"Need to specify worker number"}
 : ${EXPECT:?"Need to specify time before graceful exit"}
+: ${MODULE:?"Need to specify which module in test suite"}
 
-# Launch the test suite
+## Launch the test suite
 CID=$(
 docker run -d --link bigobject:bigobject \
     -e BIGOBJECT_HOST=bigobject \
     -e WORKER=${WORKER} \
-    macrodata/integration-test:${SUITE}
+    macrodata/integration-test:${SUITE} \
+    python -c "from cmd.${MODULE} import work; import run; run.main(work)"
 )
 
 cleanup() {

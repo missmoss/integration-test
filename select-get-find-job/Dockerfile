@@ -18,4 +18,3 @@ ENV BIGOBJECT_PORT 9090
 ENV WORKER 5
 
 WORKDIR /integration-test
-CMD ["python", "run.py"]
