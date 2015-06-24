@@ -1,4 +1,4 @@
 WORKER_TIMEOUT = 30
 CONN_TIMEOUT = 5
-READ_TIMEOUT = 1
+READ_TIMEOUT = 5
 TO_HANGUP_OR_NOT = [False, False, False, False, True]

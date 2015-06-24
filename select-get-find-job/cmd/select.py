@@ -15,7 +15,7 @@ def work(queue, job_id, bourl):
                     rtimeout = (CONN_TIMEOUT, READ_TIMEOUT)
                 else:
                     rtimeout = (CONN_TIMEOUT, 0)
-                r = reqs.post(bourl, stream=True, json={'Stmt': 'SELECT * FROM sales'}, timeout=rtimeout)
+                r = reqs.post(bourl, stream=True, json={'Stmt': 'SELECT * FROM sales LIMIT 10000'}, timeout=rtimeout)
                 for records, index, err in get_content(json_stream(r.raw)):
                     if err:
                         queue.put(Error(job_id, err))
@@ -29,9 +29,12 @@ def work(queue, job_id, bourl):
                     if index == -1:
                         break
                 queue.put(Event(job_id))
-        except reqs.exceptions.Timeout:
+        except reqs.exceptions.ConnectTimeout:
+            queue.put(Error(job_id, "unable to reach BigObject"))
+            sys.exit(1)
+        except reqs.exceptions.ReadTimeout:
             if not hangup:
-                queue.put(Error(job_id, "unable to reach BigObject"))
+                queue.put(Error(job_id, "no resp from BigObject"))
                 sys.exit(1)
             else:
                 queue.put(Event(job_id))
