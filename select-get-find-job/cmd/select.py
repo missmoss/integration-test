@@ -15,7 +15,11 @@ def work(queue, job_id, bourl):
                     rtimeout = (CONN_TIMEOUT, READ_TIMEOUT)
                 else:
                     rtimeout = (CONN_TIMEOUT, 0)
-                r = reqs.post(bourl, stream=True, json={'Stmt': 'SELECT * FROM sales LIMIT 10000'}, timeout=rtimeout)
+                r = reqs.post(bourl,
+                    stream=True,
+                    json={'Stmt': 'SELECT * FROM sales LIMIT 10000'},
+                    timeout=rtimeout
+                )
                 for content in get_content(json_stream(r.raw)):
                     _, index = validate(content)
                     if index == -1:

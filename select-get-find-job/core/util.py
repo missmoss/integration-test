@@ -1,11 +1,11 @@
 from urlparse import urlunparse
-import os
 
 __bourl = None
 
 def get_bourl():
     global __bourl
     if __bourl is None:
+        import os
         host = os.environ["BIGOBJECT_HOST"]
         port = os.environ["BIGOBJECT_PORT"]
         __bourl = urlunparse(('http', host + ':' + port, '/cmd', '', '', ''))
@@ -16,6 +16,7 @@ __worker_count = None
 def get_worker():
     global __worker_count
     if __worker_count is None:
+        import os
         __worker_count = int(os.environ["WORKER"])
     return __worker_count
 
