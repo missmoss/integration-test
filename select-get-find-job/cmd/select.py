@@ -1,9 +1,9 @@
 from core.const import *
-from core.util import Event, Error, json_stream, get_content
+from core.util import Event, Error, json_stream, get_content, validate
 
+import random
 import requests as reqs
 import sys
-import random
 
 def work(queue, job_id, bourl):
     hangup = False
@@ -16,16 +16,8 @@ def work(queue, job_id, bourl):
                 else:
                     rtimeout = (CONN_TIMEOUT, 0)
                 r = reqs.post(bourl, stream=True, json={'Stmt': 'SELECT * FROM sales LIMIT 10000'}, timeout=rtimeout)
-                for records, index, err in get_content(json_stream(r.raw)):
-                    if err:
-                        queue.put(Error(job_id, err))
-                        sys.exit(1)
-                    if records is None:
-                        queue.put(Error(job_id, "bad response: no content"))
-                        sys.exit(1)
-                    if index is None:
-                        queue.put(Error(job_id, "bad response: no index"))
-                        sys.exit(1)
+                for content in get_content(json_stream(r.raw)):
+                    _, index = validate(content)
                     if index == -1:
                         break
                 queue.put(Event(job_id))

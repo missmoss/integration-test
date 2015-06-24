@@ -74,3 +74,13 @@ def get_content(stream):
         data = obj.get('Content', {})
         err = obj.get('Err', "bad response: no Err")
         yield (data.get('content'), data.get('index'), err)
+
+def validate(content):
+    records, index, err = content
+    if err:
+        raise Exception(err)
+    if records is None:
+        raise Exception("bad response: no content")
+    if index is None:
+        raise Exception("bad response: no index")
+    return (records, index)
