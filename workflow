@@ -14,6 +14,9 @@ while [ ! $# -eq 0 ]; do
         "-m")
             MODULE="$2"; shift 2
             ;;
+        "-l")
+            LINK_TARGET="$2"; shift 2
+            ;;
         *)
             echo "Bad arguemnt"; exit 1
             ;;
@@ -24,10 +27,11 @@ done
 : ${WORKER:?"Need to specify worker number"}
 : ${EXPECT:?"Need to specify time before graceful exit"}
 : ${MODULE:?"Need to specify which module in test suite"}
+: ${LINK_TARGET:?"Need to specif which container to link to"}
 
 ## Launch the test suite
 CID=$(
-docker run -d --link bigobject:bigobject \
+docker run -d --link ${LINK_TARGET}:bigobject \
     -e BIGOBJECT_HOST=bigobject \
     -e WORKER=${WORKER} \
     macrodata/integration-test:${SUITE} \
